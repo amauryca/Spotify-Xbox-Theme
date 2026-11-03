@@ -2,6 +2,16 @@
 
 An unofficial Xbox 360-style dashboard for Spotify desktop. Browse Spotify songs and playlists, switch between visualizers, read synced lyrics when available, and navigate with a controller that Spotify detects with the standard gamepad layout.
 
+## Screenshots
+
+**MilkDrop visualizer in Spotify**
+
+![XboxBlades visualizer with playback and style controls](screenshots/visualizer.png)
+
+**Fullscreen visualizer**
+
+![Fullscreen XboxBlades visualization with the controls hidden](screenshots/fullscreen.png)
+
 ## Install on Windows, Linux, or macOS
 
 1. Install [Spicetify](https://spicetify.app/docs/getting-started) for Spotify desktop.
