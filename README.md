@@ -2,16 +2,20 @@
 
 An unofficial Xbox 360-style dashboard for Spotify desktop. Browse Spotify songs and playlists, switch between visualizers, read synced lyrics when available, and navigate with a controller that Spotify detects with the standard gamepad layout.
 
-## Install the macOS beta
+## Install on Windows, Linux, or macOS
 
 1. Install [Spicetify](https://spicetify.app/docs/getting-started) for Spotify desktop.
-2. Download and extract `XboxBlades-v0.1.0-beta-macOS.zip` from the GitHub release.
+2. Download and extract `XboxBlades-v0.1.1-beta.zip` from the GitHub release.
 3. Move the extracted `XboxBlades` folder into your Spicetify `Themes` folder. Run `spicetify config-dir` to open your Spicetify configuration folder.
+   - **Windows:** Use Spotify desktop and follow the Windows section of the Spicetify setup guide. Run the commands below in PowerShell.
+   - **Linux:** Follow the Spicetify instructions for your Spotify package, including its install path and permissions. APT and Flatpak have separate setup steps. Spotify installed via Snap cannot be patched by Spicetify.
+   - **macOS:** Use the macOS Spicetify setup.
+
 4. Run:
 
    ```sh
    spicetify config current_theme XboxBlades color_scheme Blades inject_css 1 inject_theme_js 1
-   spicetify apply
+   spicetify backup apply
    ```
 
 To restore stock Spotify, run `spicetify restore` and reopen Spotify. If you had a previous Spicetify theme, restore its settings before applying again.
@@ -27,7 +31,7 @@ To restore stock Spotify, run `spicetify restore` and reopen Spotify. If you had
 
 ## Compatibility
 
-The local theme was developed on macOS with Spotify 1.3.6.1921 and Spicetify 2.46.4. The release bundle has passed build and bridge checks. Clean installations, other operating systems, and physical controllers still need beta testing. Spotify updates can affect search, lyrics, and settings shortcuts.
+The local theme was developed on macOS with Spotify 1.3.6.1921 and Spicetify 2.46.4. The release bundle has passed build and bridge checks. Windows and Linux are beta targets. Platform-specific layout logic was checked with simulated browser platform values. Live Spotify installations on Windows and Linux and physical controllers still need testing. Spotify updates can affect search, lyrics, and settings shortcuts.
 
 Visualizers use Spotify track analysis when available. For live audio, choose an existing audio input. The beta ships without a startup video.
 
@@ -37,7 +41,7 @@ From this repository root, with Node.js and npm:
 
 ```sh
 npm ci --prefix work/xbox-build
-work/xbox-build/node_modules/.bin/tailwindcss -i work/actual-port/input.css -o work/actual-port/site.css --minify
+npm exec --prefix work/xbox-build -- tailwindcss -i work/actual-port/input.css -o work/actual-port/site.css --minify
 node work/actual-port/build.cjs
 node work/actual-port/test-parent.cjs
 node work/actual-port/test-startup.cjs

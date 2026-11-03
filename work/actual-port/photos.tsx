@@ -91,6 +91,6 @@ export function PictureBrowserScreen() {
       {photo && <button disabled={busy} onClick={()=>setIndex((index+1)%state.photos.length)}>Next photo</button>}
       {photo && <button disabled={busy} onClick={()=>update({...state,photos:state.photos.filter((_,i)=>i!==index),enabled:state.enabled&&state.photos.length>1})}>Remove this photo</button>}
     </div>
-    <p role="status">{error || (busy ? 'Preparing photos…' : `${state.photos.length} of 8 photos · Stored on this Mac · Esc to go back`)}</p>
+    <p role="status">{error || (busy ? 'Preparing photos…' : `${state.photos.length} of 8 photos · Stored on this device · Esc to go back`)}</p>
   </section>,getPortalRoot());
 }
