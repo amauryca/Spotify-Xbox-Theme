@@ -1,0 +1,6 @@
+const {JSDOM}=require('../xbox-build/node_modules/jsdom'),fs=require('fs'),assert=require('node:assert/strict');
+const code=fs.readFileSync('work/actual-port/startup.js','utf8').replace('__STARTUP_VIDEO__',JSON.stringify('data:video/mp4;base64,'));
+function fixture(enabled=true){const d=new JSDOM('<body/>',{url:'https://xpui.app.spotify.com',runScripts:'outside-only'}),w=d.window;w.HTMLMediaElement.prototype.play=()=>Promise.resolve();w.HTMLMediaElement.prototype.pause=()=>{};w.HTMLMediaElement.prototype.load=()=>{};if(!enabled)w.localStorage.setItem('xbox-startup-enabled','false');w.eval(code);return d}
+(async()=>{const finishFade=()=>new Promise(resolve=>setTimeout(resolve,500));let d=fixture();assert(d.window.document.querySelector('video'));d.window.document.querySelectorAll('button')[1].click();await finishFade();assert(!d.window.document.querySelector('#xbox-startup'));d.window.close();d=fixture();d.window.document.dispatchEvent(new d.window.KeyboardEvent('keydown',{key:'Escape'}));await finishFade();assert(!d.window.document.querySelector('#xbox-startup'));d.window.close();d=fixture(false);assert(!d.window.document.querySelector('video'));d.window.close();console.log('PASS: startup overlay, Skip, Escape, and disabled preference.');
+
+})().catch(error=>{console.error(error);process.exitCode=1});

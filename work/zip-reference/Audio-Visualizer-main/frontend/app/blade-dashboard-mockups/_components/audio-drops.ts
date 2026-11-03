@@ -1,0 +1,146 @@
+"use client";
+
+/**
+ * Makes water-drop events from a live spectrum (DESIGN.md §6.16).
+ *
+ * Each drop in the wave field is already a damped radial sinusoid
+ * (`ripplePacket` in `app/_water/water-field.ts`). Thus the music is not
+ * a physics problem here. It is a trigger problem: when does a drop
+ * land.
+ *
+ * The trigger must use onsets and not levels. A drop is a transient,
+ * such as a kick, a snare or a plucked string. Thus the test is whether
+ * a band went above its recent value, against a rolling mean for each
+ * band. A simple level threshold would fire at each frame while a band
+ * is loud, which is 60 drops a second. The ring buffer of 16 slots would
+ * then recycle before one ripple travelled.
+ *
+ * That ring buffer is the limited resource, thus there are two guards:
+ *
+ * - The cooldown increases with the frequency. Cymbals and hi-hats fire
+ *   almost continuously. Without a cooldown they would write over the
+ *   bass swell before it spread. A low band can fire again after 90 ms,
+ *   and the top band after almost half a second.
+ * - A frame can start a maximum of two drops, and the strongest first. A
+ *   snare hit raises a dozen bands at one time, and all of them would
+ *   land together and empty the buffer.
+ */
+
+/** A band with a new onset, and its strength. */
+export interface DropEvent {
+  band: number;
+  /** 0..1. It becomes the `strength` of the drop. */
+  strength: number;
+}
+
+/** How fast the rolling mean follows the signal: near 0.3 s at 60 fps. */
+const MEAN_RATE = 0.05;
+/** A band must be above its mean by this factor to be an onset. */
+const ONSET_RATIO = 1.6;
+/** A band must also be this loud, thus noise in silence does not trigger a drop. */
+const ONSET_FLOOR = 0.1;
+/** The cooldown before a new trigger, in ms, for the lowest band and the highest band. */
+const COOLDOWN_LOW = 90;
+const COOLDOWN_HIGH = 370;
+/** The maximum number of ring-buffer slots that one frame can use. */
+const MAX_PER_FRAME = 2;
+
+/**
+ * Where the drop of a band lands, as a fraction of the radius of the
+ * sheet: the bass at the centre and the treble at the rim. The
+ * visualizer uses the same function, thus the mapping is in one place.
+ */
+export const bandRadius = (band: number, bands: number) =>
+  bands <= 1 ? 0 : band / (bands - 1);
+
+/**
+ * The wavenumber of a band, as a multiple of `uK` (`uDropK` in the
+ * shader). The bass makes long wide rings and the treble makes tight
+ * rings. This part of the effect needs the per-drop wavenumber, because
+ * one global `uK` would give a kick and a cymbal ripples with the same
+ * spacing.
+ */
+export const bandWavenumber = (band: number, bands: number) =>
+  0.45 + 1.9 * bandRadius(band, bands);
+
+/**
+ * The number of onsets a second that the adaptive gate holds near, and
+ * how hard it pulls. Refer to `OnsetOptions`.
+ */
+const TARGET_RATE = 4;
+const ADAPT_GAIN = 0.06;
+const ADAPT_MIN = 0.8;
+const ADAPT_MAX = 1.6;
+/** How fast the measured rate follows the music: near one second. */
+const RATE_SMOOTH = 0.02;
+
+export interface OnsetOptions {
+  /**
+   * Moves the threshold with the density of the music.
+   *
+   * The fixed `ONSET_RATIO` is tuned for one kind of track. A dense mix
+   * goes over it in each frame and a sparse one almost never does, thus
+   * the same constant over-fires on the first and under-fires on the
+   * second. With this option the detector measures its own rate of
+   * onsets and raises the ratio while it is above `TARGET_RATE` and
+   * lowers it while it is below, inside a bounded range.
+   *
+   * The idea is from the beat detector of Geiss (1998), which is in its
+   * source but is commented out: it counted the beats of the last
+   * frames and moved the multiplier of its threshold with that count.
+   * The visible drops want the fixed gate, because there the threshold
+   * is part of a tuned picture. The beat clock wants this one, because
+   * a tempo needs a usable number of events on any track.
+   */
+  adaptive?: boolean;
+}
+
+/**
+ * Returns a detector that holds its own rolling state. Call the detector
+ * one time a frame with the spectrum and `performance.now()`.
+ */
+export function createOnsetDetector(bands: number, options: OnsetOptions = {}) {
+  const mean = new Float32Array(bands);
+  const readyAt = new Float32Array(bands);
+  const hits: DropEvent[] = [];
+  /** Onsets a second, smoothed. It drives the gate only when adaptive. */
+  let rate = TARGET_RATE;
+  let ratedAt = -1;
+
+  const cooldownFor = (band: number) =>
+    COOLDOWN_LOW + (COOLDOWN_HIGH - COOLDOWN_LOW) * bandRadius(band, bands);
+
+  return function detect(spectrum: Float32Array, now: number): DropEvent[] {
+    const ratio = options.adaptive
+      ? ONSET_RATIO *
+        Math.min(ADAPT_MAX, Math.max(ADAPT_MIN, 1 + (rate - TARGET_RATE) * ADAPT_GAIN))
+      : ONSET_RATIO;
+
+    hits.length = 0;
+    for (let band = 0; band < bands; band++) {
+      const level = spectrum[band] ?? 0;
+      const average = mean[band];
+      // The code updates the mean after the test, thus it compares a
+      // band with its previous value and not with a mean that the hit
+      // increased.
+      mean[band] = average + (level - average) * MEAN_RATE;
+
+      if (now < readyAt[band]) continue;
+      if (level < ONSET_FLOOR || level < average * ratio) continue;
+      readyAt[band] = now + cooldownFor(band);
+      hits.push({ band, strength: Math.min(1, level) });
+    }
+
+    if (options.adaptive) {
+      // A rate needs an interval. The first frame has none, and a frame
+      // after a long stop would give a rate of near zero for a gap that
+      // is not music.
+      const dt = ratedAt < 0 ? 0 : Math.min(0.1, (now - ratedAt) / 1000);
+      ratedAt = now;
+      if (dt > 0) rate += (hits.length / dt - rate) * RATE_SMOOTH;
+    }
+
+    if (hits.length <= MAX_PER_FRAME) return hits;
+    return hits.sort((a, b) => b.strength - a.strength).slice(0, MAX_PER_FRAME);
+  };
+}

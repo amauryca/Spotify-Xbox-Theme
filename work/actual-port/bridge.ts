@@ -1,0 +1,4 @@
+let serial=0;const pending=new Map<number,{resolve:(value:any)=>void,reject:(error:Error)=>void,timer:any}>();
+window.addEventListener('message',e=>{if(e.source!==parent||e.data?.channel!=='xbox-spotify-response')return;const p=pending.get(e.data.id);if(!p)return;clearTimeout(p.timer);pending.delete(e.data.id);e.data.error?p.reject(new Error(e.data.error)):p.resolve(e.data.value)});
+export function request(action:string,payload:any={}){return new Promise<any>((resolve,reject)=>{const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(new Error('Spotify did not respond. Please reopen the dashboard.'))},20000);pending.set(id,{resolve,reject,timer});parent.postMessage({channel:'xbox-spotify-request',id,action,payload},'*')})}
+export function view(name:string){window.dispatchEvent(new CustomEvent('xbox-view',{detail:name}))}
