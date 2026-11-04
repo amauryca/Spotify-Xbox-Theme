@@ -40,7 +40,7 @@ Marketplace is optional. Open a fresh terminal after installation if `spicetify`
 
 ## 2. Install XboxBlades
 
-1. Open the [XboxBlades v0.1.4-beta release](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.4-beta). Under **Assets**, download **XboxBlades-v0.1.4-beta.zip** and extract it.
+1. Open the [XboxBlades v0.1.5-beta release](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.5-beta). Under **Assets**, download **XboxBlades-v0.1.5-beta.zip** and extract it.
 2. Run `spicetify config-dir` in Terminal or PowerShell. Open **Themes** inside the directory it opens, creating it if needed. If the file manager does not open, `spicetify -c` prints the config file path. Open its parent folder.
 3. Copy the extracted **XboxBlades** folder into **Themes**. Check that `theme.js`, `user.css`, and `color.ini` are directly inside `Themes/XboxBlades/`.
 4. Run these commands in the same terminal.

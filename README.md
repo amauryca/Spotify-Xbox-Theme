@@ -38,7 +38,7 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 ## 2. Install XboxBlades
 
-1. **Download and unzip** [XboxBlades-v0.1.4-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.4-beta/XboxBlades-v0.1.4-beta.zip).
+1. **Download and unzip** [XboxBlades-v0.1.5-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.5-beta/XboxBlades-v0.1.5-beta.zip).
 2. **Open your themes folder.** Run `spicetify config-dir` in Terminal or PowerShell. In the folder it opens, open **Themes**. Create **Themes** if it’s missing.
 3. **Copy the XboxBlades folder** from the ZIP into **Themes**. Open it and check that the files are arranged like this.
 
@@ -61,7 +61,7 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 ### Optional: Xbox 360 startup intro
 
-Download the [intro-enabled XboxBlades ZIP](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.4-beta-intro) and use its **XboxBlades** folder in the install steps above. If you already have XboxBlades, replace its files and run `spicetify apply`, then restart Spotify.
+Download the [intro-enabled XboxBlades ZIP](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.5-beta/XboxBlades-v0.1.5-beta-intro.zip) and use its **XboxBlades** folder in the install steps above. If you already have XboxBlades, replace its files and run `spicetify apply`, then restart Spotify.
 
 ### Optional: Install Adblockify
 
@@ -115,7 +115,7 @@ Replace the files inside `Themes/XboxBlades/` with the files from the new theme 
 ## Controls
 
 - **Find music** searches Spotify and opens playlists. Choose a song to open its visualizer.
-- **Visual settings** contains styles, performance controls, and color adjustments. **Song only** leaves the song label visible. **Fullscreen** hides it. Press Escape to return.
+- **Visual settings** contains styles, performance controls, and color adjustments. Set **Auto-change** to an interval to rotate built-in effects during playback, or to rotate presets if MilkDrop is selected. **Off** keeps manual control. **Song only** leaves the song label visible. **Fullscreen** hides it. Press Escape to return.
 - **Lyrics** displays Spotify lyrics where available.
 - **Media → Pictures** imports up to eight local photos as a rotating dashboard background.
 - **System → Console Settings** links to Spotify settings and provides live playback controls.
