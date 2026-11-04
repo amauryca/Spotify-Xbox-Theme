@@ -2,73 +2,86 @@
 
 An unofficial Xbox 360-style dashboard for Spotify desktop. Browse Spotify songs and playlists, switch between visualizers, read synced lyrics when available, and navigate with a controller that Spotify detects with the standard gamepad layout.
 
-## Screenshots
-
-The fullscreen capture shows an earlier beta.
-
-**MilkDrop visualizer in Spotify**
-
-![XboxBlades visualizer with playback and style controls](screenshots/visualizer.png)
-
-**Fullscreen visualizer**
-
-![Fullscreen XboxBlades visualization with the controls hidden](screenshots/fullscreen.png)
+**Start here:** [Windows](#windows) · [macOS](#macos) · [Linux](#linux) · [I already have Spicetify](#2-install-xboxblades)
 
 ## 1. Install Spicetify
 
-Install [Spotify desktop](https://www.spotify.com/download/), open it, and sign in. On a fresh install, leave Spotify open for about a minute so it can create its preferences. Then choose your operating system below. If `spicetify --version` already works, skip to [Install XboxBlades](#2-install-xboxblades).
-
-### macOS
-
-Open **Terminal** and run the official installer.
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
-```
-
-If you already use Homebrew, you can install with `brew install spicetify-cli`. For Spotify in your Applications folder, set its path with `spicetify config spotify_path "/Applications/Spotify.app/Contents/Resources"`. [Spicetify macOS instructions](https://spicetify.app/docs/getting-started#macos)
+Open [Spotify desktop](https://www.spotify.com/download/) and sign in. If you just installed Spotify, leave it open for about a minute. Then run the command for your operating system.
 
 ### Windows
 
-Open **PowerShell** and run the official installer.
+Open **PowerShell** and paste this command.
 
 ```powershell
 iwr -useb https://raw.githubusercontent.com/spicetify/cli/main/install.ps1 | iex
 ```
 
-If you use WinGet, you can run `winget install Spicetify.Spicetify` instead. [Spicetify Windows instructions](https://spicetify.app/docs/getting-started#windows)
+### macOS
 
-### Linux
-
-Open your **terminal** and run the official installer.
+Open **Terminal** and paste this command.
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
 ```
 
-Follow the package-specific setup for your copy of Spotify. APT may need write permissions. Flatpak may need its Spotify install and preferences paths set in Spicetify. If you use Snap Spotify, switch to a supported package such as APT before applying the theme. [Spicetify Linux package setup](https://spicetify.app/docs/getting-started#linux-specific-setup)
+### Linux
 
-Marketplace is optional. Open a fresh terminal after installation if `spicetify` is missing, then run `spicetify --version` to check the install.
+Open **Terminal** and paste this command.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+```
+
+Follow the setup for your Spotify package before continuing. Look for **Spotify from APT** or **Spotify from Flatpak**. If you installed Spotify from Snap, follow the steps to switch packages. [Spicetify’s Linux setup guide](https://spicetify.app/docs/getting-started#linux-specific-setup)
+
+After the installer finishes, open a fresh Terminal or PowerShell window and run `spicetify --version`. If you see a version number, continue below. Marketplace is optional.
 
 ## 2. Install XboxBlades
 
-1. Open the [XboxBlades v0.1.4-beta release](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.4-beta). Under **Assets**, download **XboxBlades-v0.1.4-beta.zip** and extract it.
-2. Run `spicetify config-dir` in Terminal or PowerShell. Open **Themes** inside the directory it opens, creating it if needed. If the file manager does not open, `spicetify -c` prints the config file path. Open its parent folder.
-3. Copy the extracted **XboxBlades** folder into **Themes**. Check that `theme.js`, `user.css`, and `color.ini` are directly inside `Themes/XboxBlades/`.
-4. Run these commands in the same terminal.
+1. **Download and unzip** [XboxBlades-v0.1.4-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.4-beta/XboxBlades-v0.1.4-beta.zip).
+2. **Open your themes folder.** Run `spicetify config-dir` in Terminal or PowerShell. In the folder it opens, open **Themes**. Create **Themes** if it’s missing.
+3. **Copy the XboxBlades folder** from the ZIP into **Themes**. Open it and check that the files are arranged like this.
 
    ```text
+   Themes/
+   └── XboxBlades/
+       ├── theme.js
+       ├── user.css
+       └── color.ini
+   ```
+
+4. **Apply the theme.** Paste these two commands into Terminal or PowerShell.
+
+   ```sh
    spicetify config current_theme XboxBlades color_scheme Blades inject_css 1 inject_theme_js 1
    spicetify backup apply
    ```
 
-5. Open or restart Spotify. The Xbox dashboard opens automatically. Use **Search Spotify** to return to the regular Spotify interface and **Xbox Dashboard** to switch back.
+5. **Open Spotify.** Restart it if it was already open. The Xbox dashboard appears automatically. Use **Search Spotify** to switch to Spotify’s regular interface and **Xbox Dashboard** to switch back.
+
+### If you get stuck
+
+| What happened | What to do |
+| --- | --- |
+| `spicetify` command is missing | Open a new terminal window. If it’s still missing, check the [Spicetify install guide](https://spicetify.app/docs/getting-started). |
+| `spicetify config-dir` didn’t open a folder | Run `spicetify -c` and open the folder containing the config file it prints. |
+| Spicetify can’t find Spotify on macOS | If Spotify is in Applications, run `spicetify config spotify_path "/Applications/Spotify.app/Contents/Resources"` and try applying again. |
+| XboxBlades disappeared after a Spotify update | Run `spicetify backup apply`. If it fails, check the [Spicetify update guide](https://spicetify.app/docs/getting-started#updating). |
 
 ### Update or restore
 
-- **Update XboxBlades.** Replace the files in `Themes/XboxBlades/` with the files from the new release and run `spicetify apply`.
-- **After a Spotify update.** Run `spicetify backup apply`. If Spotify and Spicetify versions are incompatible, update Spicetify through the same method you used to install it. [Spicetify update guide](https://spicetify.app/docs/getting-started#updating)
+- **Update XboxBlades.** Replace the files inside `Themes/XboxBlades/` with the files from the new theme ZIP, then run `spicetify apply`.
 - **Restore Spotify.** Run `spicetify restore` and reopen Spotify.
+
+## Screenshots
+
+**MilkDrop visualizer in Spotify**
+
+![XboxBlades visualizer with playback and style controls](screenshots/visualizer.png)
+
+**Fullscreen visualizer from an earlier beta**
+
+![Fullscreen XboxBlades visualization with the controls hidden](screenshots/fullscreen.png)
 
 ## Controls
 
