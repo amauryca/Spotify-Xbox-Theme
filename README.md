@@ -59,6 +59,10 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 5. **Open Spotify.** Restart it if it was already open. The Xbox dashboard appears automatically. Use **Search Spotify** to switch to Spotify’s regular interface and **Xbox Dashboard** to switch back.
 
+### Optional: Xbox 360 startup intro
+
+Download the [intro-enabled XboxBlades ZIP](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.4-beta-intro) and use its **XboxBlades** folder in the install steps above. If you already have XboxBlades, replace its files and run `spicetify apply`, then restart Spotify.
+
 ### Optional: Install Adblockify
 
 After XboxBlades is running, you can add rxri’s Adblockify extension. This method works without Marketplace. [Adblockify documentation](https://github.com/rxri/spicetify-extensions/blob/main/adblock/README.md)
@@ -123,7 +127,7 @@ The local theme was developed on macOS with Spotify 1.3.6.1921 and Spicetify 2.4
 
 XboxBlades uses the standard physical layout that Spotify reports for Xbox, DualShock 4, and Switch controllers. Use the D-pad or left stick to move, the bottom face button to confirm (Xbox A, PS4 Cross, Switch B), and the right face button to go back. The PowerA Core (Plus) Wired Controller also has a fallback for its raw layout.
 
-Visualizers use Spotify track analysis when available. For live audio, choose an existing audio input. The beta ships without a startup video.
+Visualizers use Spotify track analysis when available. For live audio, choose an existing audio input. The standard beta ZIP ships without a startup video. The separate intro build includes the Xbox 360 startup clip.
 
 ## Build
 
