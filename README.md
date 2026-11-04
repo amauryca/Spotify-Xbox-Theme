@@ -2,7 +2,7 @@
 
 An unofficial Xbox 360-style dashboard for Spotify desktop. Browse Spotify songs and playlists, switch between visualizers, read synced lyrics when available, and navigate with a controller that Spotify detects with the standard gamepad layout.
 
-**Start here:** [Windows](#windows) · [macOS](#macos) · [Linux](#linux) · [I already have Spicetify](#2-install-xboxblades)
+**Start here:** [Windows](#windows) · [macOS](#macos) · [Linux](#linux) · [I already have Spicetify](#2-install-xboxblades) · [Uninstall XboxBlades](#uninstall-xboxblades)
 
 ## 1. Install Spicetify
 
@@ -68,10 +68,20 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 | Spicetify can’t find Spotify on macOS | If Spotify is in Applications, run `spicetify config spotify_path "/Applications/Spotify.app/Contents/Resources"` and try applying again. |
 | XboxBlades disappeared after a Spotify update | Run `spicetify backup apply`. If it fails, check the [Spicetify update guide](https://spicetify.app/docs/getting-started#updating). |
 
-### Update or restore
+### Update XboxBlades
 
-- **Update XboxBlades.** Replace the files inside `Themes/XboxBlades/` with the files from the new theme ZIP, then run `spicetify apply`.
-- **Restore Spotify.** Run `spicetify restore` and reopen Spotify.
+Replace the files inside `Themes/XboxBlades/` with the files from the new theme ZIP, then run `spicetify apply`.
+
+### Uninstall XboxBlades
+
+1. Open Terminal or PowerShell and run:
+
+   ```sh
+   spicetify restore
+   ```
+
+2. Fully quit Spotify and reopen it. On macOS, use **⌘Q** to quit. Spotify will open with its original interface, and Spicetify will still be installed.
+3. To remove the theme files too, run `spicetify config-dir`, open **Themes**, and move the **XboxBlades** folder to the Trash or Recycle Bin.
 
 ## Screenshots
 
