@@ -59,6 +59,21 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 5. **Open Spotify.** Restart it if it was already open. The Xbox dashboard appears automatically. Use **Search Spotify** to switch to Spotify’s regular interface and **Xbox Dashboard** to switch back.
 
+### Optional: Install Adblockify
+
+After XboxBlades is running, you can add rxri’s Adblockify extension. This method works without Marketplace. [Adblockify documentation](https://github.com/rxri/spicetify-extensions/blob/main/adblock/README.md)
+
+1. Open [adblock.js on GitHub](https://github.com/rxri/spicetify-extensions/blob/main/adblock/adblock.js) and click **Download raw file**. Keep the filename `adblock.js`.
+2. Run `spicetify config-dir`. Copy the file into **Extensions** inside the folder that opens. Create **Extensions** if it’s missing.
+3. Run these commands, then restart Spotify.
+
+   ```sh
+   spicetify config extensions adblock.js
+   spicetify apply
+   ```
+
+To turn off Adblockify, run `spicetify config extensions adblock.js-`, then `spicetify apply` and restart Spotify.
+
 ### If you get stuck
 
 | What happened | What to do |
