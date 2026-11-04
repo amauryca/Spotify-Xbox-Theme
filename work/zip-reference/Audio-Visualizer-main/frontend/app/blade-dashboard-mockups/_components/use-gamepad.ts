@@ -8,27 +8,46 @@ import {
   type InputAction,
 } from "./gamepad-input";
 
+type Layout = "standard" | "powera-wired" | "standard-shaped";
+
+function detectLayout(pad: Gamepad): Layout | null {
+  if (pad.mapping === "standard") return "standard";
+  if (pad.mapping) return null;
+
+  const powerA = /vendor:\s*20d6\s+product:\s*a711\b/i.test(pad.id);
+  if (powerA && pad.buttons.length >= 6 && pad.axes.length >= 10) {
+    return "powera-wired";
+  }
+  if (pad.buttons.length >= 16 && pad.buttons.length <= 17 && pad.axes.length === 4) {
+    return "standard-shaped";
+  }
+  return null;
+}
+
+function readInput(pad: Gamepad, layout: Layout) {
+  const pressed = pad.buttons.map((button) => button.pressed);
+  if (layout === "powera-wired") {
+    // Chromium on macOS exposes HID Hat Switch (usage 0x39) at axis 9.
+    // It encodes eight clockwise directions, starting at -1 for up.
+    const hat = pad.axes[9];
+    const direction = Math.round((hat + 1) * 3.5);
+    const hasDirection = hat >= -1 && hat <= 1
+      && Math.abs(hat - (direction / 3.5 - 1)) < 0.05;
+    pressed[12] = hasDirection && (direction === 7 || direction <= 1);
+    pressed[13] = hasDirection && direction >= 3 && direction <= 5;
+    pressed[14] = hasDirection && direction >= 5;
+    pressed[15] = hasDirection && direction >= 1 && direction <= 3;
+  }
+  return { axes: pad.axes, pressed };
+}
+
 /**
- * Reads the first connected controller and calls `onAction` for each
+ * Reads supported connected controllers and calls `onAction` for each
  * action that `stepGamepadInput` fires (DESIGN.md §8).
  *
- * The Gamepad API has no event for a button, so a rAF loop polls it. The
- * loop runs only while a pad is connected, and it asks
- * `navigator.getGamepads()` again each frame: in Chrome the `Gamepad`
- * object is a snapshot, and a kept reference never changes.
- *
- * Chrome does not show a pad to the page until a button is pressed on
- * it. Thus `gamepadconnected` can arrive some time after the pad is
- * paired, and the code also checks for a pad that is already there at
- * mount.
- *
- * A pad without the "standard" mapping (Firefox on macOS can give one)
- * logs a warning and is ignored: its indices mean something else, and a
- * guess would press the wrong buttons.
- *
- * `onConnect` is called when the browser shows a pad to the page, with
- * the `gamepadconnected` event. It is not called for a pad that is
- * already there at mount: that pad was announced on an earlier page.
+ * Poll while the dashboard is open so a controller can appear even
+ * when the embedded Spotify window misses the connection event.
+ * Prefer the browser mapping and fall back to recognizable raw layouts.
  *
  * The code reads the callbacks through refs, thus a caller can pass new
  * closures at each render and the loop does not restart.
@@ -45,72 +64,51 @@ export function useGamepad(
   });
 
   useEffect(() => {
-    if (typeof navigator === "undefined" || !("getGamepads" in navigator)) return;
-
     let frame = 0;
-    let state: GamepadInputState = INITIAL_GAMEPAD_STATE;
-    const warned = new Set<string>();
+    const states = new Map<string, GamepadInputState>();
 
-    const firstPad = () => {
-      for (const pad of navigator.getGamepads()) {
-        if (pad && pad.connected) return pad;
-      }
-      return null;
-    };
+    const sources = [navigator];
+    try {
+      if (window.parent !== window) sources.push(window.parent.navigator);
+    } catch {
+      // A cross-origin host cannot share its navigator.
+    }
 
     const tick = (now: number) => {
-      const pad = firstPad();
-      if (!pad) {
-        frame = 0;
-        state = INITIAL_GAMEPAD_STATE;
-        return;
-      }
       frame = requestAnimationFrame(tick);
+      const seen = new Set<string>();
+      const actions = new Set<InputAction>();
+      for (const source of sources) {
+        try {
+          for (const pad of source.getGamepads?.() ?? []) {
+            if (!pad?.connected) continue;
+            const layout = detectLayout(pad);
+            if (!layout) continue;
+            const identity = `${pad.index}:${pad.id}:${layout}`;
+            if (seen.has(identity)) continue;
+            seen.add(identity);
 
-      if (pad.mapping !== "standard") {
-        if (!warned.has(pad.id)) {
-          warned.add(pad.id);
-          console.warn(`Gamepad "${pad.id}" has no standard mapping. It is ignored.`);
+            const previous = states.get(identity);
+            const result = stepGamepadInput(
+              previous ?? INITIAL_GAMEPAD_STATE,
+              readInput(pad, layout),
+              now,
+            );
+            states.set(identity, result.state);
+            if (!previous) connectCallback.current?.(pad);
+            for (const action of result.actions) actions.add(action);
+          }
+        } catch (error) {
+          if ((error as { name?: string } | null)?.name !== "SecurityError") throw error;
         }
-        state = INITIAL_GAMEPAD_STATE;
-        return;
       }
-
-      const result = stepGamepadInput(
-        state,
-        { axes: pad.axes, pressed: pad.buttons.map((button) => button.pressed) },
-        now,
-      );
-      state = result.state;
-      for (const action of result.actions) callback.current(action);
+      for (const identity of states.keys()) {
+        if (!seen.has(identity)) states.delete(identity);
+      }
+      for (const action of actions) callback.current(action);
     };
 
-    const start = () => {
-      if (frame === 0) frame = requestAnimationFrame(tick);
-    };
-
-    const onConnected = (e: GamepadEvent) => {
-      console.info(`Gamepad connected: ${e.gamepad.id}`);
-      connectCallback.current?.(e.gamepad);
-      start();
-    };
-    // The loop stops by itself when no pad is left. This only resets the
-    // state, so a button that was down at the disconnect does not count
-    // as held when a pad comes back.
-    const onDisconnected = (e: GamepadEvent) => {
-      console.info(`Gamepad disconnected: ${e.gamepad.id}`);
-      state = INITIAL_GAMEPAD_STATE;
-    };
-
-    window.addEventListener("gamepadconnected", onConnected);
-    window.addEventListener("gamepaddisconnected", onDisconnected);
-    if (firstPad()) start();
-
-    return () => {
-      window.removeEventListener("gamepadconnected", onConnected);
-      window.removeEventListener("gamepaddisconnected", onDisconnected);
-      cancelAnimationFrame(frame);
-      frame = 0;
-    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, []);
 }
