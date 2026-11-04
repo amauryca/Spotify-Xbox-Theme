@@ -15,7 +15,7 @@ An unofficial Xbox 360-style dashboard for Spotify desktop. Browse Spotify songs
 ## Install on Windows, Linux, or macOS
 
 1. Install [Spicetify](https://spicetify.app/docs/getting-started) for Spotify desktop.
-2. Download and extract `XboxBlades-v0.1.2-beta.zip` from the GitHub release.
+2. Download and extract `XboxBlades-v0.1.3-beta.zip` from the GitHub release.
 3. Move the extracted `XboxBlades` folder into your Spicetify `Themes` folder. Run `spicetify config-dir` to open your Spicetify configuration folder.
    - **Windows:** Use Spotify desktop and follow the Windows section of the Spicetify setup guide. Run the commands below in PowerShell.
    - **Linux:** Follow the Spicetify instructions for your Spotify package, including its install path and permissions. APT and Flatpak have separate setup steps. Spotify installed via Snap cannot be patched by Spicetify.
@@ -42,6 +42,8 @@ To restore stock Spotify, run `spicetify restore` and reopen Spotify. If you had
 ## Compatibility
 
 The local theme was developed on macOS with Spotify 1.3.6.1921 and Spicetify 2.46.4. The release bundle has passed build and bridge checks. Windows and Linux are beta targets. Platform-specific layout logic was checked with simulated browser platform values. Live Spotify installations on Windows and Linux and physical controllers still need testing. Spotify updates can affect search, lyrics, and settings shortcuts.
+
+XboxBlades uses the standard physical layout that Spotify reports for Xbox, DualShock 4, and Switch controllers. Use the D-pad or left stick to move, the bottom face button to confirm (Xbox A, PS4 Cross, Switch B), and the right face button to go back. The PowerA Core (Plus) Wired Controller also has a fallback for its raw layout.
 
 Visualizers use Spotify track analysis when available. For live audio, choose an existing audio input. The beta ships without a startup video.
 

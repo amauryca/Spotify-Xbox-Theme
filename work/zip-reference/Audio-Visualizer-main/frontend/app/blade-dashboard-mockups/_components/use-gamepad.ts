@@ -8,9 +8,10 @@ import {
   type InputAction,
 } from "./gamepad-input";
 
-type Layout = "standard" | "powera-wired" | "standard-shaped";
+type Layout = "standard" | "powera-wired";
 
 function detectLayout(pad: Gamepad): Layout | null {
+  // Xbox, DualShock 4, and Switch pads share the standard physical layout.
   if (pad.mapping === "standard") return "standard";
   if (pad.mapping) return null;
 
@@ -18,8 +19,9 @@ function detectLayout(pad: Gamepad): Layout | null {
   if (powerA && pad.buttons.length >= 6 && pad.axes.length >= 10) {
     return "powera-wired";
   }
+  // Some drivers expose the same layout without setting the mapping flag.
   if (pad.buttons.length >= 16 && pad.buttons.length <= 17 && pad.axes.length === 4) {
-    return "standard-shaped";
+    return "standard";
   }
   return null;
 }
