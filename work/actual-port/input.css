@@ -55,3 +55,44 @@ html,body,#root,.spotify-toolbar,.spotify-toolbar *,.visual-controls,.visual-con
 .xbox-photo-actions input[type=file] { display:block; max-width:100%; }
 .xbox-photos header button { float:right; padding:8px 12px; background:#e1ebda; color:#233820; border:1px solid #a1b397; border-radius:7px; }
 .spotify-toolbar :focus-visible,.spotify-search :focus-visible,.spotify-visuals :focus-visible,.xbox-lyrics :focus-visible,.console-settings :focus-visible,.xbox-photos :focus-visible { outline:3px solid #a5e374; outline-offset:3px; }
+
+/* Silver Xbox chrome, with a green highlight for the current screen. */
+.spotify-toolbar {
+  justify-content: safe center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  background: linear-gradient(#fafcf6 0%, #e8eddf 48%, #c9d2c0 50%, #dce4d3 100%);
+  border-bottom: 1px solid #86967c;
+  box-shadow: 0 2px 8px #14201255;
+}
+.spotify-toolbar button {
+  flex: none;
+  border-color: #9ba992;
+  color: #243721;
+  background: linear-gradient(#fff, #e2e9db);
+  box-shadow: inset 0 1px #fff, 0 1px 2px #26352133;
+}
+.spotify-toolbar button[aria-current="page"] {
+  color: #172a0f;
+  border-color: #548834;
+  background: linear-gradient(#d4efa9, #92c65d);
+  box-shadow: inset 0 1px #f0ffdb, 0 0 8px #78b34b77;
+}
+.toolbar-separator { flex: 0 0 1px; }
+.visual-actions { justify-content: flex-end; max-width: calc(100% - 32px); }
+.visual-track {
+  border: 1px solid #b9d4aa44;
+  border-left: 3px solid #a4d774;
+  background: linear-gradient(130deg, #122318f2, #090e0ce8);
+  box-shadow: 0 6px 20px #0007;
+  overflow-wrap: anywhere;
+}
+.visual-track > div { color: #d6e4ce; }
+.xbox-lyrics-lines p[aria-current="true"] { border-left: 3px solid #b7e486; }
+@media (max-width: 560px) {
+  .spotify-toolbar { padding-inline: 8px; }
+  .spotify-toolbar button { padding-inline: 8px; font-size: 13px; }
+  .visual-controls { top: 96px; max-height: calc(100% - 112px); }
+  .visual-track { left: 12px; bottom: 12px; }
+}

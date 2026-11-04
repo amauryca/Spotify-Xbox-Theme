@@ -40,7 +40,7 @@ export function Lyrics() {
   }, [activeIndex, uri]);
 
   return <section className="xbox-lyrics" aria-label="Xbox Lyrics">
-    <Toolbar/>
+    <Toolbar active="lyrics"/>
     <header>
       <div><small>NOW PLAYING · LYRICS</small><h1>{track?.title || 'Lyrics'}</h1><p>{track?.artist}</p></div>
       <button onClick={() => view('visualizer')}>Back to visuals</button>
