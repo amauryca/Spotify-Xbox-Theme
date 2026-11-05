@@ -44,6 +44,10 @@ const IDLE_LEGEND: { left: LegendButton[]; right: LegendButton[] } = {
   ],
 };
 
+export const bladeHeaderClass = "px-4 pt-4 pb-3 sm:px-6 sm:pt-6 md:px-8 md:pt-8 lg:px-10 lg:pt-10";
+export const bladeTitleClass = "text-3xl text-white [text-shadow:0_1px_2px_rgba(0,0,0,.28)] sm:text-4xl";
+export const bladeFooterClass = "px-4 pb-4 pt-3 sm:px-6 sm:pb-6 md:px-8 md:pb-8 lg:px-10 lg:pb-10";
+
 export function BladePanel({
   blade,
   legend = IDLE_LEGEND,
@@ -67,6 +71,7 @@ export function BladePanel({
       }}
     >
       <div
+        data-blade-default-content
         className="blade-motion flex min-h-0 flex-1 flex-col"
         style={{
           "--blade-enter-x": `${direction * CONTENT_ENTER_PX}px`,
@@ -75,9 +80,9 @@ export function BladePanel({
       >
       <BladeChromeBand
         edge="top"
-        className="px-4 pt-4 pb-3 sm:px-6 sm:pt-6 md:px-8 md:pt-8 lg:px-10 lg:pt-10"
+        className={bladeHeaderClass}
       >
-        <h1 className="text-3xl text-white [text-shadow:0_1px_2px_rgba(0,0,0,.28)] sm:text-4xl">
+        <h1 className={bladeTitleClass}>
           {active.title}
         </h1>
       </BladeChromeBand>
@@ -91,11 +96,12 @@ export function BladePanel({
 
       <BladeChromeBand
         edge="bottom"
-        className="px-4 pb-4 pt-3 sm:px-6 sm:pb-6 md:px-8 md:pb-8 lg:px-10 lg:pb-10"
+        className={bladeFooterClass}
       >
         <ButtonLegendBar left={legend.left} right={legend.right} />
       </BladeChromeBand>
       </div>
+      {blade === "games" && <div data-games-panel-slot />}
     </MenuBoundary>
   );
 }

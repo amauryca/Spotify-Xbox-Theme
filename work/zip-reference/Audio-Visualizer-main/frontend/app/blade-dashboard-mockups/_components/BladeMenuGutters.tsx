@@ -35,29 +35,25 @@ const GUTTER_FILL = "linear-gradient(180deg,#c9c9c9,#ececec 45%,#c4c4c4)";
  * it.
  */
 export function BladeMenuGutters() {
-  const { geometry } = useBladeNav();
+  const { geometry, activeIndex, count, step } = useBladeNav();
   const transition = bladeTransition("width", "clip-path");
   const rightWidth = 1280 - geometry.rightX;
-  return (
-    <>
-      <div
-        className="absolute inset-y-0 left-0 opacity-95 blade-motion"
-        style={{
-          background: GUTTER_FILL,
-          width: `${geometry.leftPct}%`,
-          clipPath: edgeOnlyClipPath(geometry.leftX, true, geometry.leftX),
-          transition,
-        }}
-      />
-      <div
-        className="absolute inset-y-0 right-0 opacity-95 blade-motion"
-        style={{
-          background: GUTTER_FILL,
-          width: `${geometry.rightInsetPct}%`,
-          clipPath: edgeOnlyClipPathFromRight(geometry.rightX, false, rightWidth),
-          transition,
-        }}
-      />
-    </>
-  );
+  const sides = [
+    { edge: "left", width: geometry.leftPct, clipPath: edgeOnlyClipPath(geometry.leftX, true, geometry.leftX),
+      delta: -1, label: "Previous blade", disabled: activeIndex === 0 },
+    { edge: "right", width: geometry.rightInsetPct, clipPath: edgeOnlyClipPathFromRight(geometry.rightX, false, rightWidth),
+      delta: 1, label: "Next blade", disabled: activeIndex === count - 1 },
+  ];
+  return sides.map(side => {
+    const style = { [side.edge]: 0, width: `${side.width}%`, clipPath: side.clipPath, transition };
+    return (
+      <div key={side.edge}>
+        <div aria-hidden="true" className="absolute inset-y-0 opacity-95 blade-motion"
+          style={{ ...style, background: GUTTER_FILL }} />
+        <button type="button" tabIndex={-1} aria-label={side.label} disabled={side.disabled}
+          className="blade-gutter absolute inset-y-0 z-[15] blade-motion"
+          style={style} onClick={() => step(side.delta)} />
+      </div>
+    );
+  });
 }

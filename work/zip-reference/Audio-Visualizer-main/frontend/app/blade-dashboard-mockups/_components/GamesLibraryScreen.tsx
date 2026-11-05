@@ -42,10 +42,9 @@ import { XboxLiveBanner } from "./XboxLiveBanner";
 const GAMES_LIBRARY_ITEMS: LibraryMenuItem[] = [
   {
     label: "My Games",
-    meta: "8",
     icon: <MenuIcon name="controller" />,
     description:
-      "You have 8 games on your console. Select this option to play your games now.",
+      "View the games detected on this computer.",
     screen: "my-games",
   },
   {

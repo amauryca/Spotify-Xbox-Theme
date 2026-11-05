@@ -89,7 +89,7 @@ function TabItem({
 
   return (
     <li
-      className="blade-motion pointer-events-auto absolute inset-y-0"
+      className="blade-motion pointer-events-none absolute inset-y-0"
       style={{
         left: `${geom.leftPct}%`,
         width: `${geom.widthPct}%`,
@@ -102,22 +102,20 @@ function TabItem({
         data-nav-item
         onMouseEnter={() => playSound("select")}
         onClick={onSelect}
-        className="group relative block h-full w-full cursor-pointer focus-visible:outline-none"
+        className="pointer-events-none group relative block h-full w-full cursor-pointer focus-visible:outline-none"
       >
         <div
-          className="blade-motion absolute inset-0 h-full w-full group-hover:brightness-110 group-focus-visible:brightness-110"
+          className="blade-motion pointer-events-auto absolute inset-0 h-full w-full group-hover:brightness-110 group-focus-visible:brightness-110"
           style={{
             clipPath: geom.clipPath,
             background: active ? blade.tabFill : SILVER_FILL,
             filter: "drop-shadow(0 0 1px rgba(255,255,255,.85))",
-            // The shape glides at the blade tempo. The hover brightness
-            // keeps the usual 150 ms (§7.1).
             transition: `${bladeTransition("clip-path")}, filter 150ms ease`,
           }}
         />
         <span
           style={{ writingMode: "vertical-rl" }}
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px] transition-colors duration-150 ${
+          className={`pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[20px] transition-colors duration-150 ${
             active
               ? "text-(--blade-ink) group-hover:text-black group-focus-visible:text-black"
               : "text-[#7d7d7d] group-hover:text-white group-focus-visible:text-white"

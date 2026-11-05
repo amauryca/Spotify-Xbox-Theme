@@ -1,8 +1,9 @@
+import {navigateConsoleSettings} from './settings-navigation';
 import {view} from './bridge';
 import {useGamepad} from '../zip-reference/Audio-Visualizer-main/frontend/app/blade-dashboard-mockups/_components/use-gamepad';
 import type {InputAction} from '../zip-reference/Audio-Visualizer-main/frontend/app/blade-dashboard-mockups/_components/gamepad-input';
 
-const surfaces = '.spotify-search,.spotify-visuals,.xbox-lyrics,.console-settings,.xbox-photos';
+const surfaces = '.spotify-search,.spotify-visuals,.xbox-lyrics,.xbox-photos';
 const controls = 'button:not(:disabled),input:not(:disabled),select:not(:disabled)';
 function visibleControls(root:ParentNode) {
   return Array.from(root.querySelectorAll<HTMLElement>(controls)).filter(element =>
@@ -10,6 +11,8 @@ function visibleControls(root:ParentNode) {
 }
 
 export function navigateSpotify(action:InputAction) {
+  const settings = document.querySelector<HTMLElement>('.console-settings');
+  if (settings) return navigateConsoleSettings(settings, action);
   const surface = document.querySelector<HTMLElement>(surfaces);
   const toolbar = document.querySelector<HTMLElement>('.spotify-toolbar');
   const active = document.activeElement as HTMLElement | null;

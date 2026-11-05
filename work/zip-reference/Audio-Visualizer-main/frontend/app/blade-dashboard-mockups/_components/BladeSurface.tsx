@@ -96,6 +96,8 @@ export function BladeSurface({
   const rendererRef = useRef<BladeWaterRenderer | null>(null);
   const frameRef = useRef(0);
   const runningRef = useRef(false);
+  const visibleRef = useRef(true);
+  const lastDrawRef = useRef(0);
   const reducedRef = useRef(false);
   const coveredRef = useRef(covered);
 
@@ -120,12 +122,16 @@ export function BladeSurface({
     // Nothing can see this surface. Stop before the draw and not after
     // it: the frame would be correct and invisible, which is the whole
     // cost this avoids.
-    if (coveredRef.current) {
+    if (coveredRef.current || !visibleRef.current || document.hidden) {
       runningRef.current = false;
       return;
     }
     const now = performance.now();
-    renderer.draw(now);
+    // The blade backdrop is separate from the music visualizer.
+    if (now - lastDrawRef.current >= 1000 / 30 - 1) {
+      renderer.draw(now);
+      lastDrawRef.current = now;
+    }
     // The ripples continue without an end, thus only a reduced-motion
     // surface can stop the request for frames.
     if (reducedRef.current && renderer.settled(now)) {
@@ -136,7 +142,7 @@ export function BladeSurface({
   }, []);
 
   const request = useCallback(() => {
-    if (runningRef.current || coveredRef.current) return;
+    if (runningRef.current || coveredRef.current || !visibleRef.current || document.hidden) return;
     runningRef.current = true;
     frameRef.current = requestAnimationFrame(tick);
   }, [tick]);
@@ -172,8 +178,10 @@ export function BladeSurface({
 
     const measure = () => {
       const { width, height } = canvas.getBoundingClientRect();
-      if (!width || !height) return;
-      renderer.resize(width, height, window.devicePixelRatio || 1);
+      visibleRef.current = width > 0 && height > 0;
+      if (!visibleRef.current) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 1, 1440 / width, 900 / height);
+      renderer.resize(width, height, ratio);
       request();
     };
 
@@ -188,6 +196,7 @@ export function BladeSurface({
     // A ResizeObserver does not fire when only the pixel ratio changes.
     // That occurs when the window moves to another display.
     window.addEventListener("resize", measure);
+    document.addEventListener("visibilitychange", request);
 
     const onMotionChange = () => {
       reducedRef.current = motion.matches;
@@ -213,6 +222,7 @@ export function BladeSurface({
       runningRef.current = false;
       observer.disconnect();
       window.removeEventListener("resize", measure);
+      document.removeEventListener("visibilitychange", request);
       motion.removeEventListener("change", onMotionChange);
       canvas.removeEventListener("webglcontextlost", onLost);
       canvas.removeEventListener("webglcontextrestored", onRestored);

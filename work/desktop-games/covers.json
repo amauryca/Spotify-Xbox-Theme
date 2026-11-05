@@ -1,0 +1,35 @@
+[
+  {
+    "names": [
+      "Roblox",
+      "Roblox Player"
+    ],
+    "xbox": "https://store-images.s-microsoft.com/image/apps.3683.68327322396008232.ddd32983-30da-4856-a0ef-70bb8840e88d.cb3ff148-2c1f-4b84-9eea-ff80eda50c2d?h=400&w=267",
+    "source": "https://www.xbox.com/en-us/games/store/roblox-xbox/bq1tn1t79v9k"
+  },
+  {
+    "names": [
+      "Minecraft",
+      "Minecraft Launcher",
+      "Minecraft Java Edition",
+      "Minecraft for Windows"
+    ],
+    "xbox360Source": "https://www.thecoverproject.net/view.php?game_id=16815",
+    "xbox360Id": "4D530A81"
+  },
+  {
+    "names": [
+      "The Elder Scrolls V Skyrim",
+      "The Elder Scrolls V Skyrim Special Edition",
+      "Skyrim Special Edition",
+      "Skyrim Anniversary Edition",
+      "Skyrim",
+      "The Elder Scrolls V Skyrim Anniversary Edition"
+    ],
+    "steamIds": [
+      "72850",
+      "489830"
+    ],
+    "xbox360Id": "425307E6"
+  }
+]
