@@ -1,0 +1,12 @@
+{
+  "name": "XboxBlades",
+  "description": "An Xbox 360-style dashboard for Spotify with MilkDrop visualizers, synced lyrics, and controller navigation.",
+  "preview": "screenshots/visualizer.png",
+  "readme": "README.md",
+  "usercss": "outputs/XboxBlades/user.css",
+  "schemes": "outputs/XboxBlades/color.ini",
+  "include": [
+    "https://amauryca.github.io/Spotify-Xbox-Theme/marketplace/theme.js"
+  ],
+  "tags": ["xbox", "visualizer", "controller"]
+}

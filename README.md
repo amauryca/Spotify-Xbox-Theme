@@ -38,6 +38,16 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 ## 2. Install XboxBlades
 
+### Install from Marketplace
+
+1. In Spotify, open **Marketplace → Themes** and search for **XboxBlades**.
+2. Select **Install** and let Spotify reload if prompted.
+3. Use **Search Spotify** or **Marketplace** to leave the dashboard. Click **Xbox Dashboard** to return.
+
+The Marketplace version includes the dashboard, visualizers, lyrics, and controller navigation. The optional startup intro and desktop game companion are available from the release downloads below. If XboxBlades has yet to appear in Marketplace search, use the manual install.
+
+### Install from a release ZIP
+
 1. **Download and unzip** [XboxBlades-v0.1.7-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.7-beta/XboxBlades-v0.1.7-beta.zip).
 2. **Open your themes folder.** Run `spicetify config-dir` in Terminal or PowerShell. In the folder it opens, open **Themes**. Create **Themes** if it’s missing.
 3. **Copy the XboxBlades folder** from the ZIP into **Themes**. Open it and check that the files are arranged like this.
