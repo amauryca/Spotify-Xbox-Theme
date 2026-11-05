@@ -38,7 +38,7 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 ## 2. Install XboxBlades
 
-1. **Download and unzip** [XboxBlades-v0.1.6-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.6-beta/XboxBlades-v0.1.6-beta.zip).
+1. **Download and unzip** [XboxBlades-v0.1.7-beta.zip](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.7-beta/XboxBlades-v0.1.7-beta.zip).
 2. **Open your themes folder.** Run `spicetify config-dir` in Terminal or PowerShell. In the folder it opens, open **Themes**. Create **Themes** if it’s missing.
 3. **Copy the XboxBlades folder** from the ZIP into **Themes**. Open it and check that the files are arranged like this.
 
@@ -59,9 +59,15 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 5. **Open Spotify.** Restart it if it was already open. The Xbox dashboard appears automatically. Use **Search Spotify** to switch to Spotify’s regular interface and **Xbox Dashboard** to switch back.
 
+### Use Marketplace with XboxBlades
+
+If you already installed Marketplace, click **Marketplace** in the Xbox toolbar. It opens the store in Spotify, and **Xbox Dashboard** takes you back. You can also reach the store from Spotify’s sidebar after clicking **Search Spotify**.
+
+If Marketplace is missing, follow the [official Marketplace install steps for your operating system](https://spicetify.app/docs/customization/marketplace#installation), then apply XboxBlades using step 4 above. Marketplace extensions and snippets can be managed in the store. For best results, keep one visual theme active at a time. If another theme applies its own styles, disable it from Marketplace’s **Installed** tab.
+
 ### Optional: Xbox 360 startup intro
 
-Download the [intro-enabled XboxBlades ZIP](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.6-beta/XboxBlades-v0.1.6-beta-intro.zip) and use its **XboxBlades** folder in the install steps above. If you already have XboxBlades, replace its files and run `spicetify apply`, then restart Spotify.
+Download the [intro-enabled XboxBlades ZIP](https://github.com/amauryca/Spotify-Xbox-Theme/releases/download/v0.1.7-beta/XboxBlades-v0.1.7-beta-intro.zip) and use its **XboxBlades** folder in the install steps above. If you already have XboxBlades, replace its files and run `spicetify apply`, then restart Spotify.
 
 ### Optional: Install Adblockify
 
@@ -123,7 +129,7 @@ Replace the files inside `Themes/XboxBlades/` with the files from the new theme 
 
 ## Desktop games preview
 
-The [desktop games companion](work/desktop-games/README.md) scans supported game locations on macOS, Windows, and Linux and populates **Games → Played Games → My Games**. It searches the Xbox 360 archive for matching box art, then checks the modern Xbox entries and falls back to available installed artwork. Both release ZIPs include the companion. With it running, you can open supported games from the blade.
+The [desktop games companion](work/desktop-games/README.md) scans supported game locations on macOS, Windows, and Linux and populates **Games → Played Games → My Games**. It searches the Xbox 360 archive for matching box art, then checks the modern Xbox entries and falls back to available installed artwork. Both release ZIPs include the companion. Run `node refresh.cjs --background` in the **desktop-games** folder to enable launching. The companion keeps running when you close the terminal.
 
 ## Compatibility
 

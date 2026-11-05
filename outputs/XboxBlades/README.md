@@ -40,7 +40,7 @@ Marketplace is optional. Open a fresh terminal after installation if `spicetify`
 
 ## 2. Install XboxBlades
 
-1. Open the [XboxBlades v0.1.6-beta release](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.6-beta). Under **Assets**, download **XboxBlades-v0.1.6-beta.zip** and extract it.
+1. Open the [XboxBlades v0.1.7-beta release](https://github.com/amauryca/Spotify-Xbox-Theme/releases/tag/v0.1.7-beta). Under **Assets**, download **XboxBlades-v0.1.7-beta.zip** and extract it.
 2. Run `spicetify config-dir` in Terminal or PowerShell. Open **Themes** inside the directory it opens, creating it if needed. If the file manager does not open, `spicetify -c` prints the config file path. Open its parent folder.
 3. Copy the extracted **XboxBlades** folder into **Themes**. Check that `theme.js`, `user.css`, and `color.ini` are directly inside `Themes/XboxBlades/`.
 4. Run these commands in the same terminal.
@@ -51,6 +51,12 @@ Marketplace is optional. Open a fresh terminal after installation if `spicetify`
    ```
 
 5. Open or restart Spotify. The Xbox dashboard opens automatically. Use **Search Spotify** to return to the regular Spotify interface and **Xbox Dashboard** to switch back.
+
+### Use Marketplace with XboxBlades
+
+If you already installed Marketplace, click **Marketplace** in the Xbox toolbar. It opens the store in Spotify, and **Xbox Dashboard** takes you back. You can also reach the store from Spotify’s sidebar after clicking **Search Spotify**.
+
+If Marketplace is missing, follow the [official Marketplace install steps for your operating system](https://spicetify.app/docs/customization/marketplace#installation), then apply XboxBlades using step 4 above. Marketplace extensions and snippets can be managed in the store. For best results, keep one visual theme active at a time. If another theme applies its own styles, disable it from Marketplace’s **Installed** tab.
 
 ### Update or restore
 

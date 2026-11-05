@@ -1,9 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const {execFile, execFileSync, spawn} = require('node:child_process');
+const {execFile, execFileSync, fork, spawn} = require('node:child_process');
 const {randomBytes} = require('node:crypto');
 const http = require('node:http');
+const {once} = require('node:events');
 const port = 38761;
 
 function imageData(file) {
@@ -257,7 +258,14 @@ function launchGame(target, done) {
 
 function launchServer(games, token) {
   const launches = new Map(games.filter(game => game.launch).map(game => [game.id, game.launch]));
-  return http.createServer((request, response) => {
+  const server = http.createServer((request, response) => {
+    if (request.method === 'POST' && request.url === '/stop' &&
+        request.headers.host === `127.0.0.1:${port}` && !request.headers.origin &&
+        request.headers.authorization === 'Bearer ' + token) {
+      response.writeHead(204).end();
+      server.close();
+      return;
+    }
     if (request.headers.host !== `127.0.0.1:${port}` ||
         request.headers.origin !== 'https://xpui.app.spotify.com' ||
         request.url !== '/launch') {
@@ -280,6 +288,53 @@ function launchServer(games, token) {
     }
     launchGame(target, error => response.writeHead(error ? 502 : 204).end());
   });
+  return server;
+}
+
+function startInBackground(args) {
+  const child = fork(__filename, args, {detached: true, stdio: ['ignore', 'ignore', 'ignore', 'ipc']});
+  child.once('message', ({error}) => {
+    if (error) {
+      console.error(error);
+      process.exitCode = 1;
+    } else {
+      console.log('Game companion is running. You can close this terminal.');
+    }
+    child.disconnect();
+    child.unref();
+  });
+  child.once('error', reportError);
+  child.once('exit', code => { if (code) process.exitCode = 1; });
+}
+
+function stopServer(output) {
+  let token;
+  try { token = JSON.parse(read(output)).token; } catch {}
+  if (!token) throw Error('No game companion session found.');
+  return new Promise((resolve, reject) => {
+    const request = http.request({
+      host: '127.0.0.1', port, path: '/stop', method: 'POST',
+      headers: {Authorization: 'Bearer ' + token},
+    }, response => {
+      response.resume();
+      if (response.statusCode === 204) resolve();
+      else reject(Error('The running companion could not be stopped. An older version may still be open in another terminal.'));
+    });
+    request.on('error', error => {
+      if (error.code === 'ECONNREFUSED') resolve();
+      else reject(error);
+    });
+    request.setTimeout(3000, () => request.destroy(Error('The companion did not respond.')));
+    request.end();
+  });
+}
+
+function reportError(error) {
+  const message = error.code === 'EADDRINUSE' ?
+    'The game companion port is already in use. Run node refresh.cjs --stop before refreshing, or close the older companion terminal.' : error.message;
+  if (process.connected) process.send({error: message});
+  else console.error(message);
+  process.exitCode = 1;
 }
 
 async function main(args) {
@@ -287,16 +342,21 @@ async function main(args) {
   let output;
   let apply = false;
   let serve = false;
+  let background = false;
+  let stop = false;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--apply') apply = true;
+    else if (args[i] === '--background') background = true;
+    else if (args[i] === '--stop') stop = true;
     else if (args[i] === '--serve') { serve = true; apply = true; }
     else if (args[i] === '--folder' && args[i+1]) folders.push(args[++i]);
     else if (args[i] === '--output' && args[i+1]) output = path.resolve(args[++i]);
-    else throw Error('Usage: node refresh.cjs [--folder "Games folder"] [--output games.json | --apply | --serve]');
+    else throw Error('Usage: node refresh.cjs [--folder "Games folder"] [--output games.json | --apply | --serve | --background | --stop]');
   }
-  const catalog = JSON.parse(read(path.join(__dirname, 'covers.json')));
-
-  if (output && apply) throw Error('Choose --output or --apply.');
+  if ([output, apply, background, stop].filter(Boolean).length > 1 || (stop && folders.length)) {
+    throw Error('Choose one mode: --output, --apply, --serve, --background, or --stop.');
+  }
+  if (background) return startInBackground(args.map(arg => arg === '--background' ? '--serve' : arg));
   if (!output) {
     const config = command('spicetify', ['-c']);
     if (!config || !fs.existsSync(config)) throw Error('Spicetify config unavailable. Run Spicetify from a fresh terminal first.');
@@ -304,37 +364,44 @@ async function main(args) {
     if (!fs.existsSync(path.join(theme, 'theme.js'))) throw Error('Install the XboxBlades theme first.');
     output = path.join(theme, 'assets', 'xboxblades', 'desktop-games.json');
   }
+  if (stop) {
+    await stopServer(output);
+    console.log('Game companion is stopped.');
+    return;
+  }
+  const catalog = JSON.parse(read(path.join(__dirname, 'covers.json')));
   const cache = path.join(os.homedir(), '.cache', 'xboxblades', 'xbox360-index.json');
   const archive = await loadXbox360Index(cache);
   const games = detect(catalog, folders, archive);
-  fs.mkdirSync(path.dirname(output), {recursive: true});
   const token = serve ? randomBytes(24).toString('hex') : undefined;
   const publicGames = games.map(({launch, id, ...game}) => ({
     ...game, launchId: token && launch ? Buffer.from(id).toString('base64url') : undefined,
   }));
-  const temporary = output + '.' + process.pid + '.tmp';
-  try {
-    fs.writeFileSync(temporary, JSON.stringify({games:publicGames, token}, null, 2) + '\n');
-    fs.renameSync(temporary, output);
-  } finally {
-    fs.rmSync(temporary, {force: true});
-  }
-  console.log(`Found ${games.length} games. Saved ${output}`);
-  if (serve) {
+  let server;
+  if (apply) {
     const targets = games.map(game => ({...game, id:Buffer.from(game.id).toString('base64url')}));
-    const server = launchServer(targets, token);
-    server.on('error', error => { console.error(error.message); process.exitCode = 1; });
-    server.listen(port, '127.0.0.1', () => {
-      try {
-        applyTheme();
-        console.log('Game launching is ready. Keep this terminal open while using My Games.');
-      } catch (error) {
-        console.error(error.message);
-        process.exitCode = 1;
-        server.close();
-      }
-    });
-  } else if (apply) applyTheme();
+    server = serve ? launchServer(targets, token) :
+      http.createServer((_request, response) => response.writeHead(503).end());
+    await once(server.listen(port, '127.0.0.1'), 'listening');
+  }
+  try {
+    fs.mkdirSync(path.dirname(output), {recursive: true});
+    const temporary = output + '.' + process.pid + '.tmp';
+    try {
+      fs.writeFileSync(temporary, JSON.stringify({games:publicGames, token}, null, 2) + '\n');
+      fs.renameSync(temporary, output);
+    } finally {
+      fs.rmSync(temporary, {force: true});
+    }
+    console.log(`Found ${games.length} games. Saved ${output}`);
+    if (apply) applyTheme();
+    if (!serve) server?.close();
+    if (process.connected) process.send({ready: true});
+    else if (serve) console.log('Game launching is ready. Keep this terminal open while using My Games.');
+  } catch (error) {
+    server?.close();
+    throw error;
+  }
 }
 
 function applyTheme() {
@@ -343,6 +410,6 @@ function applyTheme() {
 }
 
 if (require.main === module) {
-  main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
+  main(process.argv.slice(2)).catch(reportError);
 }
 module.exports = {findCover, indexXbox360, steamGames};

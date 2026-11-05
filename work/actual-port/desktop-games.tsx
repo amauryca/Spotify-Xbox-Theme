@@ -78,10 +78,17 @@ export function MyGamesScreen({onClose}: MenuScreenProps) {
         headers: {Authorization: `Bearer ${token}`, 'X-Xbox-Game': item.launchId},
         signal: AbortSignal.timeout(5000),
       });
-      if (!response.ok) throw Error();
+      if (response.status === 403) {
+        setLaunchMessage('The companion has a different game list. Reopen Spotify and try again.');
+        return;
+      }
+      if (!response.ok) {
+        setLaunchMessage('The companion could not open this game. Try starting it from its launcher.');
+        return;
+      }
       setLaunchMessage(`Launch requested for ${item.name}.`);
     } catch {
-      setLaunchMessage('Could not open the game. Check that the desktop companion is running.');
+      setLaunchMessage('Could not reach the game companion. Run node refresh.cjs --background in the desktop-games folder and try again.');
     } finally {
       launchPending.current = false;
     }
