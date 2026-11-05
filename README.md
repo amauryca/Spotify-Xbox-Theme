@@ -40,9 +40,11 @@ After the installer finishes, open a fresh Terminal or PowerShell window and run
 
 ### Install from Marketplace
 
-1. In Spotify, open **Marketplace → Themes** and search for **XboxBlades**.
-2. Select **Install** and let Spotify reload if prompted.
+1. In Spotify, open **Marketplace → Themes** and search for **XboxBlades**. If search misses it, clear the search and try **Sort by → Last Updated**.
+2. Select **Install**, then **Reload now**. If the dashboard takes a while to appear, fully quit and reopen Spotify.
 3. Use **Search Spotify** or **Marketplace** to leave the dashboard. Click **Xbox Dashboard** to return.
+
+If Spicetify is using a manually installed theme, switch to the Marketplace theme slot before installing through the store. Follow the [official Marketplace setup guide](https://github.com/spicetify/marketplace/wiki/Installation).
 
 The Marketplace version includes the dashboard, visualizers, lyrics, and controller navigation. The optional startup intro and desktop game companion are available from the release downloads below. If XboxBlades has yet to appear in Marketplace search, use the manual install.
 
@@ -108,6 +110,8 @@ To turn off Adblockify, run `spicetify config extensions adblock.js-`, then `spi
 Replace the files inside `Themes/XboxBlades/` with the files from the new theme ZIP, then run `spicetify apply`.
 
 ### Uninstall XboxBlades
+
+If you installed through Marketplace, open **Marketplace → Installed**, choose **Remove** on XboxBlades, then select **Reload now**. For a manual ZIP install, follow the steps below.
 
 1. Open Terminal or PowerShell and run:
 
